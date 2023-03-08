@@ -12,15 +12,16 @@ s_and_p_100 = ['AAPL', 'ABBV', 'ABT', 'ACN', 'ADBE', 'AIG', 'AMD', 'AMGN', 'AMT'
                , 'RTX', 'SBUX', 'SCHW', 'SO', 'SPG', 'T', 'TGT', 'TMO', 'TMUS', 'TSLA'
                , 'TXN', 'UNH', 'UNP', 'UPS', 'USB', 'V', 'VZ', 'WBA', 'WFC', 'WMT', 'XOM']
 
-headers = {'User-Agent': "gregsmith@kubrickgroup.com"}
-
-def write_page(url:str, filepath:str) -> None:
+def write_page(url:str, filepath:str, user_email:str) -> None:
     
-    '''takes a url and writes the html to a file specified by the provided path
-    url: str
-    filepath: str'''
+    '''
+    takes a url and writes the html to a file specified by the provided path
+    url: string
+    user_email: string
+    filepath: string
+    '''
     
-    r = get_request(url, 'Archives')    #request        
+    r = get_request(url, 'Archives', user_email)    #request        
         
     html_str = r.text                                               #get text of response
 
@@ -28,11 +29,13 @@ def write_page(url:str, filepath:str) -> None:
         f.write(html_str)
 
         
-def download_files_10k(ticker:str, dest_folder:str, min_date = None, max_date = None, report = '10-K') -> None:
+def download_files_10k(ticker:str, dest_folder:str, user_email:str, min_date = None, max_date = None, report = '10-K') -> None:
     
-    '''takes a ticker and writes all files from that ticker to html files in the specified folder.
+    '''
+    takes a ticker and writes all files from that ticker to html files in the specified folder.
     ticker:string -> raises an exception if not found
-    dest_folder: str
+    dest_folder: string
+    user_email: string
     min_date: str in 'YYYY-MM-DD' format can specify the earliest date records should be included
     max_date: str in 'YYYY-MM-DD' format  can specify the latest date records should be included
     report: str -> specifies the type of report to run
@@ -46,16 +49,16 @@ def download_files_10k(ticker:str, dest_folder:str, min_date = None, max_date = 
         dest_folder += '\\' 
     
     #request for company ticker mappings
-    r = get_request('https://www.sec.gov/files/company_tickers.json', 'Company Tickers')
+    r = get_request('https://www.sec.gov/files/company_tickers.json', 'Company Tickers', user_email)
     
     #process and return CIK as string and string with leading zeros 
     cik_short, cik_long = cik_get(r, ticker)
     
     #request submissions list
-    r = get_request(fr'https://data.sec.gov/submissions/CIK{cik_long}.json', 'Submissions')
+    r = get_request(fr'https://data.sec.gov/submissions/CIK{cik_long}.json', 'Submissions', user_email)
       
     #full list of 10-K reports with relevant extensions
-    ten_k_list = submissions(r, min_date, max_date, report)
+    ten_k_list = submissions(r, min_date, max_date, report, user_email)
     
     #request content of 10-K reports and write to file
     for item in ten_k_list:
@@ -63,25 +66,28 @@ def download_files_10k(ticker:str, dest_folder:str, min_date = None, max_date = 
         try:
             if item[3] != '':
                 url = fr'https://www.sec.gov/Archives/edgar/data/{cik_short}/{item[1].replace("-","")}/{item[3]}'
-                write_page(url, dest_folder+f'{ticker}_{report}_{date}.html')
+                write_page(url, dest_folder+f'{ticker}_{report}_{date}.html', user_email)
             else:
                 url = fr'https://www.sec.gov/Archives/edgar/data/{cik_short}/{item[1]}.txt'
-                write_page(url, dest_folder+f'{ticker}_{report}_{date}.html')
+                write_page(url, dest_folder+f'{ticker}_{report}_{date}.html', user_email)
         except:
             url = fr'https://www.sec.gov/Archives/edgar/data/{cik_short}/{item[1].replace("-","")}/{item[1]}.txt'
-            write_page(url, dest_folder+f'{ticker}_{report}_{date}.html')
+            write_page(url, dest_folder+f'{ticker}_{report}_{date}.html', user_email)
                 
 
         
-def get_request(url:str, section:str, headers=headers):
+def get_request(url:str, section:str, user_email:str):
     
-    '''takes a url and returns the response via the requests get method. Raises a specific exception
+    '''
+    takes a url and returns the response via the requests get method. Raises a specific exception
     if the response is anything except 200. Headers are specified externally. Sleep method has been
     included to limit request volume.
     url:string
-    section: str
+    user_email:string
+    section: string
     headers: dictionary of the form {"User-Agent": "gregsmith@kubrickgroup.com"}
     '''
+    headers = {'User-Agent': user_email}
     
     r = requests.get(url,headers=headers)
     
@@ -94,7 +100,8 @@ def get_request(url:str, section:str, headers=headers):
 
 def cik_get(r, ticker:str) -> (str,str):
     
-    '''takes the response from the mapping document and identifies the CIK associated with that ticker.
+    '''
+    takes the response from the mapping document and identifies the CIK associated with that ticker.
     If no ticker is found an exception is raised. Returns a tuple consisting of the CIK as a trimmed 
     string and a 10 character string with leading zeros
     r: response object
@@ -110,7 +117,7 @@ def cik_get(r, ticker:str) -> (str,str):
     if test:
         raise Exception('Input ticker not recognised')
         
-def submissions(r, min_date:str, max_date:str, report:str) -> list[(str,str,str,str)]:
+def submissions(r, min_date:str, max_date:str, report:str, user_email:str) -> list[(str,str,str,str)]:
     
     '''takes the response from the company filings and returns this as a list of tuples that represent the required
     values to make additional API calls.
@@ -118,6 +125,7 @@ def submissions(r, min_date:str, max_date:str, report:str) -> list[(str,str,str,
     min_date: str in 'YYYY-MM-DD' format can specify the earliest date records should be included
     max_date: str in 'YYYY-MM-DD' format  can specify the latest date records should be included
     report: str -> specifies the type of report to run
+    user_email:string
     '''
     
     filings = r.json()['filings']
@@ -132,7 +140,7 @@ def submissions(r, min_date:str, max_date:str, report:str) -> list[(str,str,str,
     full_filings['primaryDocument'] = recent_filings['primaryDocument']
     
     for file in previous_filings:
-        r = get_request(fr'https://data.sec.gov/submissions/{file["name"]}', 'Older Filings').json()
+        r = get_request(fr'https://data.sec.gov/submissions/{file["name"]}', 'Older Filings', user_email).json()
         full_filings['form'].extend(r['form'])
         full_filings['accessionNumber'].extend(r['accessionNumber'])
         full_filings['filingDate'].extend(r['filingDate'])
@@ -149,16 +157,17 @@ def submissions(r, min_date:str, max_date:str, report:str) -> list[(str,str,str,
     
     return ten_k_list
 
-def full_download(ticker_list:list[str], dest_folder:str, min_date = None, max_date = None, report = '10-K') -> None:
+def full_download(ticker_list:list[str], dest_folder:str, user_email:str, min_date = None, max_date = None, report = '10-K') -> None:
     
     '''takes a list of company tickers and writes all reports of a specific type, between specific dates, to a
     destination folder.
     ticker_list: list of strings of tickers for the companies being examined
     dest_folder: string of the destination folder
+    user_email:string
     min_date: str in 'YYYY-MM-DD' format can specify the earliest date records should be included
     max_date: str in 'YYYY-MM-DD' format  can specify the latest date records should be included
     report: str -> specifies the type of report to run
     '''
     
     for ticker in ticker_list:
-        download_files_10k(ticker, dest_folder, min_date, max_date, report)
+        download_files_10k(ticker, dest_folder, user_email, min_date, max_date, report)
