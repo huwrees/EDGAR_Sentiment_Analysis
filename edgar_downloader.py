@@ -12,23 +12,24 @@ s_and_p_100 = ['AAPL', 'ABBV', 'ABT', 'ACN', 'ADBE', 'AIG', 'AMD', 'AMGN', 'AMT'
                , 'RTX', 'SBUX', 'SCHW', 'SO', 'SPG', 'T', 'TGT', 'TMO', 'TMUS', 'TSLA'
                , 'TXN', 'UNH', 'UNP', 'UPS', 'USB', 'V', 'VZ', 'WBA', 'WFC', 'WMT', 'XOM']
 
-def write_page(url:str, filepath:str, user_email:str) -> None:
+def full_download(ticker_list:list[str], dest_folder:str, user_email:str, min_date = None, max_date = None, report = '10-K') -> None:
     
     '''
-    takes a url and writes the html to a file specified by the provided path
-    url: string
-    user_email: string
-    filepath: string
+    takes a list of company tickers and writes all reports of a specific type, between specific dates, to a
+    destination folder.
+    ticker_list: list of strings of tickers for the companies being examined
+    dest_folder: string of the destination folder
+    user_email:string
+    min_date: str in 'YYYY-MM-DD' format can specify the earliest date records should be included
+    max_date: str in 'YYYY-MM-DD' format  can specify the latest date records should be included
+    report: str -> specifies the type of report to run
     '''
     
-    r = get_request(url, 'Archives', user_email)    #request        
-        
-    html_str = r.text                                               #get text of response
+    for ticker in ticker_list:
+        download_files_10k(ticker, dest_folder, user_email, min_date, max_date, report)
 
-    with open(filepath, 'w') as f:                                  #write html to file
-        f.write(html_str)
 
-        
+
 def download_files_10k(ticker:str, dest_folder:str, user_email:str, min_date = None, max_date = None, report = '10-K') -> None:
     
     '''
@@ -73,7 +74,25 @@ def download_files_10k(ticker:str, dest_folder:str, user_email:str, min_date = N
         except:
             url = fr'https://www.sec.gov/Archives/edgar/data/{cik_short}/{item[1].replace("-","")}/{item[1]}.txt'
             write_page(url, dest_folder+f'{ticker}_{report}_{date}.html', user_email)
-                
+
+
+
+def write_page(url:str, filepath:str, user_email:str) -> None:
+    
+    '''
+    takes a url and writes the html to a file specified by the provided path
+    url: string
+    user_email: string
+    filepath: string
+    '''
+    
+    r = get_request(url, 'Archives', user_email)    #request        
+        
+    html_str = r.text                                               #get text of response
+
+    with open(filepath, 'w') as f:                                  #write html to file
+        f.write(html_str)
+
 
         
 def get_request(url:str, section:str, user_email:str):
@@ -98,6 +117,8 @@ def get_request(url:str, section:str, user_email:str):
     
     return r
 
+
+
 def cik_get(r, ticker:str) -> (str,str):
     
     '''
@@ -116,7 +137,9 @@ def cik_get(r, ticker:str) -> (str,str):
             return (f'{ticker_dict[entity]["cik_str"]}',f'{ticker_dict[entity]["cik_str"]:010d}')
     if test:
         raise Exception('Input ticker not recognised')
-        
+
+
+
 def submissions(r, min_date:str, max_date:str, report:str, user_email:str) -> list[(str,str,str,str)]:
     
     '''takes the response from the company filings and returns this as a list of tuples that represent the required
@@ -157,17 +180,3 @@ def submissions(r, min_date:str, max_date:str, report:str, user_email:str) -> li
     
     return ten_k_list
 
-def full_download(ticker_list:list[str], dest_folder:str, user_email:str, min_date = None, max_date = None, report = '10-K') -> None:
-    
-    '''takes a list of company tickers and writes all reports of a specific type, between specific dates, to a
-    destination folder.
-    ticker_list: list of strings of tickers for the companies being examined
-    dest_folder: string of the destination folder
-    user_email:string
-    min_date: str in 'YYYY-MM-DD' format can specify the earliest date records should be included
-    max_date: str in 'YYYY-MM-DD' format  can specify the latest date records should be included
-    report: str -> specifies the type of report to run
-    '''
-    
-    for ticker in ticker_list:
-        download_files_10k(ticker, dest_folder, user_email, min_date, max_date, report)
