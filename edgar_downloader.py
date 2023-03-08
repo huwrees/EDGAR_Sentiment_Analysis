@@ -1,4 +1,7 @@
 import requests
+import time
+
+headers = {'User-Agent': "gregsmith@kubrickgroup.com"}
 
 def write_page(url:str, filepath:str) -> None:
     
@@ -6,10 +9,12 @@ def write_page(url:str, filepath:str) -> None:
     url: str
     filepath: str'''
     
-    r = requests.get(url, headers={"User-Agent": "Mozilla/5.0"})    #request
+    r = requests.get(url, headers=headers)    #request
     
     if r.status_code != 200:                                             #check if response is valid
         raise Exception('Bad Request: Archives')
+    
+    time.sleep(.1)                                                  #optional sleep function to reduce chance of overtaxing the API
         
     html_str = r.text                                               #get text of response
 
@@ -48,11 +53,13 @@ def download_files_10k(ticker:str, dest_folder:str) -> None:
     if test:
         raise Exception('Input ticker not recognised')
 
-    r = requests.get(fr'https://data.sec.gov/submissions/CIK{cik_long}.json',headers={"User-Agent": "Mozilla/5.0"})
+    r = requests.get(fr'https://data.sec.gov/submissions/CIK{cik_long}.json',headers=headers)
     
     if r.status_code != 200:                                             #check if response is valid
         raise Exception('Bad Request: Submissions')
-        
+    
+    time.sleep(.1)                                                  #optional sleep function to reduce chance of overtaxing the API
+
     full_list = r.json()['filings']['recent']
     ten_k_list = []
     
