@@ -53,8 +53,8 @@ def hyper_tuning(X_train, y_train, X_test, y_test, depth_list, sample_list):
     
     return summary_df
 
-depth_list = [input_list]
-sample_list = [input_list]
+depth_list = [1,2,3,4,5]
+sample_list = [0.01,0.02,0.03,0.04,0.05]
 
-hyper_tuning(X_train, y_train, X_test, y_test, depth_list, sample_list).head()
+#hyper_tuning(X_train, y_train, X_test, y_test, depth_list, sample_list).head()
 
