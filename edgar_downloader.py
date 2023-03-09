@@ -61,18 +61,19 @@ def download_files_10k(ticker:str, dest_folder:str, user_email:str, min_date = N
     #full list of 10-K reports with relevant extensions
     ten_k_list = submissions(r, min_date, max_date, report, user_email)
     
+    i_url = fr'https://www.sec.gov/Archives/edgar/data/'
     #request content of 10-K reports and write to file
     for item in ten_k_list:
         date = item[2]
         try:
             if item[3] != '':
-                url = fr'https://www.sec.gov/Archives/edgar/data/{cik_short}/{item[1].replace("-","")}/{item[3]}'
+                url = fr'{i_url}{cik_short}/{item[1].replace("-","")}/{item[3]}'
                 write_page(url, dest_folder+f'{ticker}_{report}_{date}.html', user_email)
             else:
-                url = fr'https://www.sec.gov/Archives/edgar/data/{cik_short}/{item[1]}.txt'
+                url = fr'{i_url}{cik_short}/{item[1]}.txt'
                 write_page(url, dest_folder+f'{ticker}_{report}_{date}.html', user_email)
         except:
-            url = fr'https://www.sec.gov/Archives/edgar/data/{cik_short}/{item[1].replace("-","")}/{item[1]}.txt'
+            url = fr'{i_url}{cik_short}/{item[1].replace("-","")}/{item[1]}.txt'
             write_page(url, dest_folder+f'{ticker}_{report}_{date}.html', user_email)
 
 
@@ -119,7 +120,7 @@ def get_request(url:str, section:str, user_email:str):
 
 
 
-def cik_get(r, ticker:str) -> (str,str):
+def cik_get(r, ticker:str):
     
     '''
     takes the response from the mapping document and identifies the CIK associated with that ticker.
@@ -181,3 +182,4 @@ def submissions(r, min_date:str, max_date:str, report:str, user_email:str) -> li
     
     return ten_k_list
 
+download_files_10k('AAPL', 'C:\edgar_practice\dest_folder', 'ousabou@hotmail.com', '2022-06-10', '2023-03-01')
