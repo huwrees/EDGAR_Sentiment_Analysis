@@ -15,21 +15,24 @@ def get_yahoo_data(start_date, end_date, tickers):
     Downloads yahoo finance data and cosolidates into a table.
     Returns a dataframe.
     """
-    import yfinance as yf
+    from yahoofinancials import YahooFinancials
     import pandas as pd
     
     data = pd.DataFrame()
     for ticker in tickers:
-        ticker_data = yf.download(ticker, start=start_date, end=end_date)
-        ticker_data['1daily_return'] = ticker_data['Close'].pct_change(periods=1)
-        ticker_data['2daily_return'] = ticker_data['Close'].pct_change(periods=2)
-        ticker_data['3daily_return'] = ticker_data['Close'].pct_change(periods=3)
-        ticker_data['5daily_return'] = ticker_data['Close'].pct_change(periods=5)
-        ticker_data['10daily_return'] = ticker_data['Close'].pct_change(periods=10)
+        yahoo_financials = YahooFinancials(ticker)
+        ticker_data = yahoo_financials.get_historical_price_data(start_date, end_date, 'daily')
+        ticker_data = pd.DataFrame(ticker_data[ticker]['prices'])
+        ticker_data['1daily_return'] = ticker_data['close'].pct_change(periods=1)
+        ticker_data['2daily_return'] = ticker_data['close'].pct_change(periods=2)
+        ticker_data['3daily_return'] = ticker_data['close'].pct_change(periods=3)
+        ticker_data['5daily_return'] = ticker_data['close'].pct_change(periods=5)
+        ticker_data['10daily_return'] = ticker_data['close'].pct_change(periods=10)
         ticker_data['Symbol'] = ticker
         data = data.append(ticker_data, sort=False)
     data = data.reset_index()
-    data = data[['Date', 'High', 'Low', 'Close', 'Volume', '1daily_return', '2daily_return', '3daily_return', '5daily_return', '10daily_return', 'Symbol']]
+    data = data[['formatted_date', 'high', 'low', 'close', 'volume', '1daily_return', '2daily_return', '3daily_return', '5daily_return', '10daily_return', 'Symbol']]
+    data = data.rename(columns={'formatted_date': 'Date', 'high': 'High', 'low': 'Low', 'close': 'Close'})
     
     return data
 
