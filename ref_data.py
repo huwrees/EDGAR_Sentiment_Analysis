@@ -1040,7 +1040,7 @@ def get_sentiment_word_dict():
   'FAILURE',
   'FAILURES',
   'FALLOUT',
-  False,
+  'FALSE',
   ...],
  'Positive': ['ABLE',
   'ABUNDANCE',
