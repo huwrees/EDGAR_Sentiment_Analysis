@@ -15,9 +15,9 @@ def write_document_sentiments(input_folder, output_file):
     uncert_words = sentiment_dict['Uncertainty']
     lit_words = sentiment_dict['Litigious']
     const_words = sentiment_dict['Constraining']
-    sup_words = sentiment_dict['Superfluous']
-    interest_words = sentiment_dict['Interesting']
-    modal_words = sentiment_dict['Strong Modal'] + sentiment_dict['Weak Modal']
+    modal_words = sentiment_dict['Strong_Modal'] + sentiment_dict['Weak_Modal']
+    # sup_words = sentiment_dict['Superfluous']
+    # interest_words = sentiment_dict['Interesting']
 
   
 
@@ -48,22 +48,22 @@ def write_document_sentiments(input_folder, output_file):
 
 
         for word in str(read_data).split():
-            if word in neg_words:
+            if word.upper() in neg_words:
                 neg_count += 1
-            elif word in pos_words:
+            elif word.upper() in pos_words:
                 pos_count += 1
-            elif word in uncert_words:
+            elif word.upper() in uncert_words:
                 uncert_count += 1
-            elif word in lit_words:
+            elif word.upper() in lit_words:
                 lit_count += 1
-            elif word in const_words:
+            elif word.upper() in const_words:
                 const_count += 1
-            elif word in sup_words:
-                sup_count += 1
-            elif word in interest_words:
-                interest_count += 1 
-            elif word in modal_words:
+            elif word.upper() in modal_words:
                 modal_count += 1
+            # elif word in sup_words:
+            #     sup_count += 1
+            # elif word in interest_words:
+            #     interest_count += 1 
 
         list_of_counts.append(symbol_report_type[0])
         list_of_counts.append(symbol_report_type[1])
