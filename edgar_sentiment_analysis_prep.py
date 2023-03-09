@@ -4,14 +4,13 @@
 import pandas as pd
 import numpy as np
 import datetime as dt
-import matplotlib.pyplot as plt
 import sklearn
 from sklearn.model_selection import train_test_split
 # project specific imports
-import ref_data as edgar_data
-import edgar_downloader as edgar_downloader
-import edgar_cleaner as edgar_cleaner
-import edgar_sentiment_wordcount as edgar_sentiment
+import ref_data as rf
+import edgar_downloader as ed
+import edgar_cleaner as ec
+import edgar_sentiment_wordcount as esw
 
 
 # suggestions/change log
@@ -23,17 +22,17 @@ def full_train_dataset():
     Creates a csv to specified file path
     '''
 
-    tickers_sp100 = edgar_data.get_sp100()
-    #edgar_downloader.download_files_10k(‘AAPL’, ‘C:/10k_filings_raw’)
-    edgar_downloader.full_download(tickers_sp100, 'C:/10k_filings_raw', 'gregsmith@kubrickgroup.com', report = '10-K') # min_date = None, max_date = None,
+    tickers_sp100 = rf.get_sp100()
+    #ed.download_files_10k(‘AAPL’, ‘C:/10k_filings_raw’)
+    ed.full_download(tickers_sp100, 'C:/10k_filings_raw', 'gregsmith@kubrickgroup.com', report = '10-K') # min_date = None, max_date = None,
 
-    edgar_cleaner.write_clean_html_text_files('C:/10k_filings_raw', 'C:/10k_filings_clean')
+    ec.write_clean_html_text_files('C:/10k_filings_raw', 'C:/10k_filings_clean')
 
-    df_returns = edgar_data.get_yahoo_data('2000-01-01', '2020-08-01', tickers_sp100, 'daily') # Need to decide dates as I have to pass a date here
+    df_returns = rf.get_yahoo_data('2000-01-01', '2020-08-01', tickers_sp100, 'daily') # Need to decide dates as I have to pass a date here
     df_returns.to_csv('C:/stock_returns_daily.csv', index=False)
-    sentiment_dict = edgar_data.get_sentiment_word_dict()
+    sentiment_dict = rf.get_sentiment_word_dict()
 
-    edgar_sentiment.write_document_sentiments('C:/10k_filings_clean', 'C:/sentiment_factors.csv')
+    esw.write_document_sentiments('C:/10k_filings_clean', 'C:/sentiment_factors.csv')
 
     # Load Data
     stock_returns_daily_df = pd.read_csv('C:/stock_returns_daily.csv')                         # Load in stock return data
@@ -126,10 +125,10 @@ def get_test_train_df(dataset_df, features, target):
 # neg_feature = ['Negative']
 # #########################################################################################################
 
-full_train_dataset()
+# full_train_dataset()
 
-full_dataset_df = pd.read_csv('C:/EDGAR/full_dataset.csv') 
+# full_dataset_df = pd.read_csv('C:/EDGAR/full_dataset.csv') 
 
-neg_pos_features = ['Negative', 'Positive']
-one_day_target = ['1daily return']
-get_test_train(neg_pos_features, features, one_day_target)
+# neg_pos_features = ['Negative', 'Positive']
+# one_day_target = ['1daily return']
+# get_test_train(neg_pos_features, features, one_day_target)
