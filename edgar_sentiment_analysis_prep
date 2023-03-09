@@ -50,6 +50,9 @@ def full_train_dataset():
 
     full_combined_df.to_csv('C:/EDGAR/full_dataset.csv', index = False)              # Will need to decide a better place for this
 
+def get_train_dataset(input_stock_data, input_sentiment_data, output_file):
+    
+    return combined_df.to_csv(output_file, index = False)              # Will need to decide a better place for this
 
 # Feature Engineering
 
