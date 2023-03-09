@@ -43,6 +43,12 @@ def get_yahoo_data(start_date, end_date, tickers):
 
 
 def get_sentiment_word_dict():
+    '''
+    Returns a dictionary containing the LM sentiment words. The keys for the dictionary are the 
+    sentiments, and the values will be a list of words associated with that particular sentiment.
+    
+    Note: Loughran-McDonald MasterDictionary excel file must be in same directory as module.
+    '''
     import pandas as pd
     df = pd.read_excel('Loughran-McDonald_MasterDictionary_1993-2021.xlsx')
     
