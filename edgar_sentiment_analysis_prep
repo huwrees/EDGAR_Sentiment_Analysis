@@ -14,9 +14,13 @@ import edgar_cleaner as edgar_cleaner
 import edgar_sentiment_wordcount as edgar_sentiment
 
 
+# suggestions/change log
+# add a argument to full_train_dataset() specifying file paths
+# suggestion: create a new folder at the start and delete it at the end
+
 def full_train_dataset():
     '''
-    Returns a 
+    Creates a csv to specified file path
     '''
 
     tickers_sp100 = edgar_data.get_sp100()
@@ -44,7 +48,7 @@ def full_train_dataset():
     # Combine Datasets
     full_combined_df = pd.merge(full_stock_returns_daily_df, full_sentiment_factors_df, on = ['Date', 'ticker'], how = 'left')
 
-    return full_combined_df.to_csv('C:/EDGAR/full_dataset.csv', index = False)              # Will need to decide a better place for this
+    full_combined_df.to_csv('C:/EDGAR/full_dataset.csv', index = False)              # Will need to decide a better place for this
 
 
 # Feature Engineering
@@ -75,7 +79,7 @@ def sentiment_factors_prep(df):
     # Using Positive and Negative Word Count – With Normalization for Calculating Sentiment Score
     new_df['sentiment1'] = new_df.apply(lambda row: round((row['Positive'] - row['Negative']) / row['word_sum'], 2), axis = 1)       # Calculate a Sentiment score using positive & negative word counts 
     # Using Positive and Negative Word Counts – With Semi Normalization to calculate Sentiment Score
-    new_df['sentiment2'] = new_df.apply(lambda row: round(row['Positive'] / (row['Negative'] + 1), 2), axis = 1) 
+    new_df['sentiment2'] = new_df.apply(lambda row: round(row['Positive'] / (row['Negative']+1), 2), axis = 1)
     # round(df['pos_count'] / (df['neg_count']+1), 2)
 
     # Drop unnessary columns, raw word category counts
@@ -95,8 +99,6 @@ def get_test_train_csv(input_file, features, target):
     y_test = df_test[target]                                    # NB -- we use lower case 'y' because it is a vactor (math term for series)
     
     return X_train, y_train, X_test, y_test
-
-dataset_df = pd.read_csv('C:/EDGAR/full_dataset.csv') 
 
 def get_test_train_df(dataset_df, features, target):
     
