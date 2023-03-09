@@ -2,7 +2,6 @@
 
 
 def write_document_sentiments(input_folder, output_file):
-
    
     import pandas as pd
     import os # needed to interate over files 
