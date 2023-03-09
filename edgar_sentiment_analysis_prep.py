@@ -17,17 +17,18 @@ import edgar_sentiment_wordcount as esw
 # add a argument to full_train_dataset() specifying file paths
 # suggestion: create a new folder at the start and delete it at the end
 
-def full_train_dataset():
+def full_train_dataset(): # input_min_date = None, input_max_date = None
     '''
     Creates a csv to specified file path
     '''
 
     tickers_sp100 = rf.get_sp100()
     #ed.download_files_10k(‘AAPL’, ‘C:/10k_filings_raw’)
-    ed.full_download(tickers_sp100, 'C:/10k_filings_raw', 'gregsmith@kubrickgroup.com', report = '10-K') # min_date = None, max_date = None,
+    ed.full_download(tickers_sp100, 'C:/10k_filings_raw', 'gregsmith@kubrickgroup.com', report = '10-K') #min_date = input_min_date, max_date = input_max_date,
 
     ec.write_clean_html_text_files('C:/10k_filings_raw', 'C:/10k_filings_clean')
-
+    
+    #df_returns = rf.get_yahoo_data(input_min_date, input_max_date, tickers_sp100, 'daily')
     df_returns = rf.get_yahoo_data('2000-01-01', '2020-08-01', tickers_sp100, 'daily') # Need to decide dates as I have to pass a date here
     df_returns.to_csv('C:/stock_returns_daily.csv', index=False)
     sentiment_dict = rf.get_sentiment_word_dict()
