@@ -181,5 +181,3 @@ def submissions(r, min_date:str, max_date:str, report:str, user_email:str) -> li
             ten_k_list.append(list(item))
     
     return ten_k_list
-
-download_files_10k('AAPL', 'C:\edgar_practice\dest_folder', 'ousabou@hotmail.com', '2022-06-10', '2023-03-01')
