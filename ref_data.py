@@ -1,4 +1,8 @@
 # ref_data.py
+
+from yahoofinancials import YahooFinancials
+import pandas as pd
+
 def get_sp100():
     """
     Returns a list of all tickers in the S&P100.
@@ -15,8 +19,6 @@ def get_yahoo_data(start_date, end_date, tickers):
     Downloads yahoo finance data and cosolidates into a table.
     Returns a dataframe.
     """
-    from yahoofinancials import YahooFinancials
-    import pandas as pd
     
     if type(tickers) == str:                                    # if a single ticker (string) is passed through convert to list
         tickers = [tickers]
@@ -26,7 +28,7 @@ def get_yahoo_data(start_date, end_date, tickers):
         yahoo_financials = YahooFinancials(ticker)
         ticker_data = yahoo_financials.get_historical_price_data(start_date, end_date, 'daily')
         ticker_data = pd.DataFrame(ticker_data[ticker]['prices'])
-        ticker_data['1daily_return'] = ticker_data['close'].pct_change(periods=1)
+        ticker_data['1daily_return'] = ticker_data['close'].pct_change(periods=1).shift(-1)
         ticker_data['2daily_return'] = ticker_data['close'].pct_change(periods=2)
         ticker_data['3daily_return'] = ticker_data['close'].pct_change(periods=3)
         ticker_data['5daily_return'] = ticker_data['close'].pct_change(periods=5)
