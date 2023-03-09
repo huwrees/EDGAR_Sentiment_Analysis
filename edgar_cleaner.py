@@ -8,7 +8,7 @@ def clean_html_text(html_text):
     final_text = re.sub(r'\W+', " ", text)
     return final_text
 
-def clean_html_files(source_folder, dest_folder):
+def write_clean_html_text_files(source_folder, dest_folder):
     if not os.path.exists(dest_folder):
         os.makedirs(dest_folder)
 
@@ -22,6 +22,4 @@ def clean_html_files(source_folder, dest_folder):
             with open(os.path.join(dest_folder, os.path.splitext(filename)[0] + ".txt"), "w") as f:
                 f.write(clean_text)
 
-            print('dpne')
-
-clean_html_files('C:\edgar_ec', r'C:\edgar_ec\txt.files')
+    print('done')
