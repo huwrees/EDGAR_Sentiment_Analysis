@@ -58,7 +58,7 @@ def get_train_dataset(input_stock_data, input_sentiment_data, output_file):
 
 def stock_returns_prep(df): 
     
-    new_df = df.drop(['high', 'low', 'price'], axis = 1)                       # Remove unnessary columns # sample_stock_returns_daily_df
+    new_df = df.drop(['High', 'Low', 'Close'], axis = 1)                       # Remove unnessary columns # sample_stock_returns_daily_df
     new_df.rename(columns={"date": "Date"}, inplace= True)                              # Change date column name for later merge
 
     return new_df
