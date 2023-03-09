@@ -55,7 +55,7 @@ def get_sentiment_word_dict():
     Returns a dictionary containing the LM sentiment words. The keys for the dictionary are the 
     sentiments, and the values will be a list of words associated with that particular sentiment.
     
-    Note: Loughran-McDonald MasterDictionary excel file must be in same directory as module.
+    Note: Loughran-McDonald MasterDictionary csv file must be in same directory as module.
     '''
     import pandas as pd
     df = pd.read_csv('Loughran-McDonald_MasterDictionary_1993-2021.csv')
@@ -63,9 +63,9 @@ def get_sentiment_word_dict():
     sentiment_dict = {}
 
     
-    for column in df.columns[1:]:
+    for column in df.columns[7:-2]:
         
-        words = df.loc[df[column] <= 0, 'Word'].tolist()
+        words = df.loc[df[column] > 0, 'Word'].tolist()
         sentiment_dict[column] = words
     
     return sentiment_dict
