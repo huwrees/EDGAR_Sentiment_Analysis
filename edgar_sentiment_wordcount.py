@@ -16,6 +16,7 @@ def write_document_sentiments(input_folder, output_file):
     lit_words = sentiment_dict['Litigious']
     const_words = sentiment_dict['Constraining']
     modal_words = sentiment_dict['Strong_Modal'] + sentiment_dict['Weak_Modal']
+        # These categories do not seem to be in the Master Dictionary
     # sup_words = sentiment_dict['Superfluous']
     # interest_words = sentiment_dict['Interesting']
 
@@ -48,7 +49,7 @@ def write_document_sentiments(input_folder, output_file):
 
 
         for word in str(read_data).split():
-            if word.upper() in neg_words:
+            if word.upper() in neg_words:               # word.upper() to match with the dictionary word list format
                 neg_count += 1
             elif word.upper() in pos_words:
                 pos_count += 1
