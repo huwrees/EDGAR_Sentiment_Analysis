@@ -18,6 +18,9 @@ def get_yahoo_data(start_date, end_date, tickers):
     from yahoofinancials import YahooFinancials
     import pandas as pd
     
+    if type(tickers) == str:                                    # if a single ticker (string) is passed through convert to list
+        tickers = [tickers]
+
     data = pd.DataFrame()
     for ticker in tickers:
         yahoo_financials = YahooFinancials(ticker)
