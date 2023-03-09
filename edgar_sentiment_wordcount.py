@@ -66,7 +66,7 @@ def write_document_sentiments(input_folder, output_file):
             # elif word in interest_words:
             #     interest_count += 1 
 
-        list_of_counts.append(symbol_report_type[0])
+        list_of_counts.append(symbol_report_type[0].upper())
         list_of_counts.append(symbol_report_type[1])
         list_of_counts.append(date[0])
         list_of_counts.append(neg_count)
