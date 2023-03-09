@@ -142,7 +142,8 @@ def cik_get(r, ticker:str) -> (str,str):
 
 def submissions(r, min_date:str, max_date:str, report:str, user_email:str) -> list[(str,str,str,str)]:
     
-    '''takes the response from the company filings and returns this as a list of tuples that represent the required
+    '''
+    takes the response from the company filings and returns this as a list of tuples that represent the required
     values to make additional API calls.
     r: response object
     min_date: str in 'YYYY-MM-DD' format can specify the earliest date records should be included
