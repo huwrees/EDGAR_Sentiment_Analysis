@@ -82,10 +82,11 @@ def write_document_sentiments(input_folder, output_file):
 
   
 
-    df = pd.DataFrame(tot_list_of_counts, columns = ['Symbol', 'ReportType', 'FilingDate', 'Negative', 'Positive', 'Uncertainty', 'Litigious', 'Constraining', 'Superfluous', 'Interesting', 'Model'])
+    df = pd.DataFrame(tot_list_of_counts, columns = ['Symbol', 'ReportType', 'FilingDate', 'Negative', 'Positive', 'Uncertainty', 'Litigious', 'Constraining', 'Superfluous', 'Interesting', 'Modal'])
 
 
     df.to_csv(output_file, index = False)
+    
 
 
 
