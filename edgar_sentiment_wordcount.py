@@ -9,15 +9,13 @@ def write_document_sentiments(input_folder, output_file):
     
     sentiment_dict = edgar_data.get_sentiment_word_dict()
     
-    neg_words = sentiment_dict['Negative']
-    pos_words = sentiment_dict['Positive']
-    uncert_words = sentiment_dict['Uncertainty']
-    lit_words = sentiment_dict['Litigious']
-    const_words = sentiment_dict['Constraining']
-    modal_words = sentiment_dict['Strong_Modal'] + sentiment_dict['Weak_Modal']
-        # These categories do not seem to be in the Master Dictionary
-    # sup_words = sentiment_dict['Superfluous']
-    # interest_words = sentiment_dict['Interesting']
+    neg_words = set(sentiment_dict['Negative'])
+    pos_words = set(sentiment_dict['Positive'])
+    uncert_words = set(sentiment_dict['Uncertainty'])
+    lit_words = set(sentiment_dict['Litigious'])
+    const_words = set(sentiment_dict['Constraining'])
+    modal_words = set(sentiment_dict['Strong_Modal'] + sentiment_dict['Weak_Modal'])
+    
 
   
 
@@ -39,8 +37,6 @@ def write_document_sentiments(input_folder, output_file):
         uncert_count = 0 
         lit_count = 0
         const_count = 0 
-        sup_count = 0 
-        interest_count = 0 
         modal_count = 0 
 
         list_of_counts = []
@@ -59,10 +55,7 @@ def write_document_sentiments(input_folder, output_file):
                 const_count += 1
             elif word.upper() in modal_words:
                 modal_count += 1
-            # elif word in sup_words:
-            #     sup_count += 1
-            # elif word in interest_words:
-            #     interest_count += 1 
+            
 
         list_of_counts.append(symbol_report_type[0].upper())
         list_of_counts.append(symbol_report_type[1])
@@ -72,8 +65,6 @@ def write_document_sentiments(input_folder, output_file):
         list_of_counts.append(uncert_count)
         list_of_counts.append(lit_count)
         list_of_counts.append(const_count)
-        list_of_counts.append(sup_count)
-        list_of_counts.append(interest_count)
         list_of_counts.append(modal_count) 
 
         tot_list_of_counts.append(list_of_counts)
@@ -81,7 +72,7 @@ def write_document_sentiments(input_folder, output_file):
 
   
 
-    df = pd.DataFrame(tot_list_of_counts, columns = ['Symbol', 'ReportType', 'FilingDate', 'Negative', 'Positive', 'Uncertainty', 'Litigious', 'Constraining', 'Superfluous', 'Interesting', 'Modal'])
+    df = pd.DataFrame(tot_list_of_counts, columns = ['Symbol', 'ReportType', 'FilingDate', 'Negative', 'Positive', 'Uncertainty', 'Litigious', 'Constraining', 'Modal'])
 
 
     df.to_csv(output_file, index = False, encoding='utf-8')
@@ -90,4 +81,3 @@ def write_document_sentiments(input_folder, output_file):
 
 
 
-#write_document_sentiments("C:\\Testing stuff for edgar\\Data", "C:\\Testing stuff for edgar\Table.csv")
