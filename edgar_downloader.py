@@ -137,8 +137,7 @@ def cik_get(r, ticker:str):
             test = False
             return (f'{ticker_dict[entity]["cik_str"]}',f'{ticker_dict[entity]["cik_str"]:010d}')
     if test:
-        raise Exception('Input ticker not recognised')
-
+        raise Exception(f'Input ticker {ticker} not recognised')
 
 
 def submissions(r, min_date:str, max_date:str, report:str, user_email:str) -> list[(str,str,str,str)]:
