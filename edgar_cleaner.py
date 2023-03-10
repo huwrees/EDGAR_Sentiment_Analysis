@@ -22,4 +22,3 @@ def write_clean_html_text_files(source_folder, dest_folder):
             with open(os.path.join(dest_folder, os.path.splitext(filename)[0] + ".txt"), "w", encoding='utf-8') as f:
                 f.write(clean_text)
 
-    print('done')
