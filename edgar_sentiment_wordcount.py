@@ -28,9 +28,8 @@ def write_document_sentiments(input_folder, output_file):
     
         symbol_report_type = files.split('_')
         date = symbol_report_type[2].split('.')
-        
 
-        file = open(input_folder +'\\' + files, 'r')
+        file = open(input_folder +'\\' + files, 'r', encoding='utf-8')
         read_data = file.readlines()
         file.close()
         
@@ -85,7 +84,7 @@ def write_document_sentiments(input_folder, output_file):
     df = pd.DataFrame(tot_list_of_counts, columns = ['Symbol', 'ReportType', 'FilingDate', 'Negative', 'Positive', 'Uncertainty', 'Litigious', 'Constraining', 'Superfluous', 'Interesting', 'Modal'])
 
 
-    df.to_csv(output_file, index = False)
+    df.to_csv(output_file, index = False, encoding='utf-8')
     
 
 
