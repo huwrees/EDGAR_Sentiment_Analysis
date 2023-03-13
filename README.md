@@ -12,11 +12,11 @@ Note:   For word classifications, the Loughran-McDonald dictionary for word clas
 
 
 Modules that need to be installed beforehand:
-
-   yahoofinancials
-   pandas
-   numpy
-   sklearn
+   
+   -yahoofinancials
+   -pandas
+   -numpy
+   -sklearn
 
 Outline of Process:
 1. Empty folders created to hold raw HTML and text data
