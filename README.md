@@ -16,3 +16,14 @@ Modules that need to be installed beforehand:
    yahoofinancials
    pandas
    numpy
+   sklearn
+
+Outline of Process:
+1. Empty folders created to hold raw HTML and text data
+2. The downloader function is called which downloads all the 10-k files and places them in the empty folder.
+3. The cleaner function is called which removes any unwanted symbols and returns the 10-k files as cleaned text.
+4. The yahoo finance function pulls the yahoo finance information and places it into a csv document.
+5. The sentiment analysis function takes all the clean text 10-k files, counts the number of words in the 
+document belonging to a particular sentiment and outputs the results to an output csv file.
+6. The yahoo finacial data and sentiment data is combined using the sentiment analyis prep functions.
+7. Once combined the data is split into test and train for input into different machine learning models.
