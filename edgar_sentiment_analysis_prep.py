@@ -5,7 +5,7 @@ import pandas as pd
 import os
 import shutil
 from sklearn.model_selection import train_test_split
-# project specific imports
+# project module imports
 import ref_data as rf
 import edgar_downloader as ed
 import edgar_cleaner as ec
@@ -22,7 +22,8 @@ def full_train_dataset(dataset_name: str,
     ***IMPORTANT*** The dest_folder, if specified, must in in a raw string format eg... r'C:\EDGAR'.
     Creates a .csv file containing sentiment word counts of 10-k Financial Reports combined with short-term share price movements.
     The file has a specified name (dataset_name) and is saved to a specified folder (dest_folder or defaulting to C:\EDGAR).
-    You can specify the companies that you want to analyse using the ticker_list input. Input as a list of strings, where the strings are upper case ticker symbols.
+    You can specify the companies that you want to analyse using the ticker_list input. Input as a list of strings, 
+    where the strings are upper case ticker symbols.
     Additionally, you can specify the date range for the reports and stock data, user_email to access the .... .
     '''
     
@@ -43,17 +44,15 @@ def full_train_dataset(dataset_name: str,
         os.makedirs(raw_10k_filings_path)
     except OSError:
         print ("Creation of the directory %s failed" % raw_10k_filings_path)
-    # else:
-    #     pass # print ("Successfully created the directory %s " % raw_10k_filings_path)
 
 
-    ed.full_download(ticker_list, raw_10k_filings_path, user_email, min_date = min_date, max_date = max_date) #min_date = input_min_date, max_date = input_max_date,
+    ed.full_download(ticker_list, raw_10k_filings_path, user_email, min_date = min_date, max_date = max_date)
 
     ec.write_clean_html_text_files(raw_10k_filings_path, clean_10k_filings_path)
     # Delete 10_filings_raw folder
     shutil.rmtree(raw_10k_filings_path)
 
-    df_returns = rf.get_yahoo_data(min_date, max_date, ticker_list) # Need to decide dates as I have to pass a date here
+    df_returns = rf.get_yahoo_data(min_date, max_date, ticker_list)
     df_returns.to_csv(rf'{dest_folder}\stock_returns.csv', index=False)
     
     esw.write_document_sentiments(clean_10k_filings_path, rf'{dest_folder}\sentiment_factors.csv')
@@ -62,7 +61,7 @@ def full_train_dataset(dataset_name: str,
 
     # Load Data
     stock_returns_df = pd.read_csv(rf'{dest_folder}\stock_returns.csv')                         # Load in stock return data
-    sentiment_factors_df = pd.read_csv(rf'{dest_folder}\sentiment_factors.csv')                             # Load in sentiment word count data
+    sentiment_factors_df = pd.read_csv(rf'{dest_folder}\sentiment_factors.csv')                 # Load in sentiment word count data
     
     # Delete unnessary .csv files
     if os.path.exists(rf'{dest_folder}\stock_returns.csv'):
@@ -83,7 +82,7 @@ def full_train_dataset(dataset_name: str,
     combined_df = pd.merge(sentiment_factors_df, stock_returns_df, on = ['Date', 'Symbol'], how = 'left')
     # Clean Combined Dataset
     combined_df.drop_duplicates(inplace = True)
-    combined_df.dropna(inplace = True) # .dropna(subset=['1daily_return', '2daily_return', '3daily_return', '5daily_return', '10daily_return'])
+    combined_df.dropna(inplace = True)
     
     # Save Combined Dataset to .csv file
     combined_df.to_csv(rf'{dest_folder}\{dataset_name}.csv', index = False)              
@@ -92,18 +91,27 @@ def full_train_dataset(dataset_name: str,
 # Feature Engineering
 
 def stock_returns_prep(df): 
-    
+    '''
+    Function that takes a dataframe and outputs a 'clean' dataframe. 
+    Ready for it to be combined with another relevant datafram 'sentiment_factors;
+    Formatting column names and dropping unneeded columns.
+    df: DataFrame for the function to act upon 
+    '''
     new_df = df.drop(['High', 'Low', 'Close'], axis = 1)                       # Remove unnessary columns # sample_stock_returns_daily_df
     new_df.rename(columns={"date": "Date"}, inplace= True)                     # Change date column name for later merge
 
     return new_df
 
 def sentiment_factors_prep(df):  
+    '''
+    Function to clean and feature engineer the 'sentiment factors' dataframe.
+    Formatting column names, Dropping uneeded columns and normalisiing data and creature new features for later modelling.
+    df: DataFrame for the function to act upon 
+    '''
+
     new_df = df.drop(['ReportType'], axis = 1)                                # Remove unnessary columns
     new_df.rename(columns={"FilingDate": "Date"}, inplace= True)              # Change date column name for later merge
-    new_df['word_sum'] = new_df.sum(axis = 1)                                 # Calculate total number of categorised words from the report
-    # FutureWarning: Dropping of nuisance columns in DataFrame reductions (with 'numeric_only=None') is deprecated;
-    # in a future version this will raise TypeError.  Select only valid columns before calling the reduction.
+    new_df['word_sum'] = new_df.sum(axis = 1, numeric_only=True)              # Calculate total number of categorised words from the report
 
     # Normalise wordcounts as a % of sum of word counts or report word count? 
     new_df['perc_Negative'] = new_df.apply(lambda row: row['Negative'] / row['word_sum'], axis = 1)
@@ -120,28 +128,3 @@ def sentiment_factors_prep(df):
     new_df['sentiment2'] = new_df.apply(lambda row: round(row['Positive'] / (row['Negative']+1), 2), axis = 1)
 
     return new_df
-
-def get_test_train_csv(input_file, features, target):
-
-    dataset_df = pd.read_csv(input_file) 
-    df_train, df_test = train_test_split(dataset_df, test_size=0.3, random_state=0) 
-
-    X_train = df_train[features]                                # NB -- we use upper case 'X' because it is a matrix (math term for df)
-    y_train = df_train[target]                                  # NB -- we use lower case 'y' because it is a vactor (math term for series)
-
-    X_test = df_test[features]                                  # NB -- we use upper case 'X' because it is a matrix (math term for df)
-    y_test = df_test[target]                                    # NB -- we use lower case 'y' because it is a vactor (math term for series)
-    
-    return X_train, y_train, X_test, y_test
-
-def get_test_train_df(dataset_df, features, target):
-    
-    df_train, df_test = train_test_split(dataset_df, test_size=0.3, random_state=0) 
-
-    X_train = df_train[features]                                # NB -- we use upper case 'X' because it is a matrix (math term for df)
-    y_train = df_train[target]                                  # NB -- we use lower case 'y' because it is a vactor (math term for series)
-
-    X_test = df_test[features]                                  # NB -- we use upper case 'X' because it is a matrix (math term for df)
-    y_test = df_test[target]                                    # NB -- we use lower case 'y' because it is a vactor (math term for series)
-    
-    return X_train, y_train, X_test, y_test

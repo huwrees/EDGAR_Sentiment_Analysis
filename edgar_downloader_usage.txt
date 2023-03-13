@@ -1,7 +1,0 @@
-import edgar_downloader as ed
-
-#will download 10-K filings for Apple since start of 2020.
-ed.download_files_10k('aapl',r'C:\Edgar_EC\test_output', "gregsmith@kubrickgroup.com", min_date = '2000-01-01')
-
-#will download 10-K filings for all companies on the S&P 100 since start of 2022. This process takes some time.
-ed.full_download(ed.s_and_p_100, r'C:\Edgar_EC\test_output', "gregsmith@kubrickgroup.com", min_date = '2022-01-01')

@@ -1,18 +1,9 @@
 import requests
 import time
 
-s_and_p_100 = ['AAPL', 'ABBV', 'ABT', 'ACN', 'ADBE', 'AIG', 'AMD', 'AMGN', 'AMT', 'AMZN'
-               , 'AVGO', 'AXP', 'BA', 'BAC', 'BK', 'BKNG', 'BLK', 'BMY', 'BRK-B', 'C'
-               , 'CAT', 'CHTR', 'CL', 'CMCSA', 'COF', 'COP', 'COST', 'CRM', 'CSCO', 'CVS'
-               , 'CVX', 'DHR', 'DIS', 'DOW', 'DUK', 'EMR', 'EXC', 'F', 'FDX', 'GD'
-               , 'GE', 'GILD', 'GM', 'GOOG', 'GOOGL', 'GS', 'HD', 'HON', 'IBM', 'INTC'
-               , 'JNJ', 'JPM', 'KHC', 'KO', 'LIN', 'LLY', 'LMT', 'LOW', 'MA', 'MCD'
-               , 'MDLZ', 'MDT', 'MET', 'META', 'MMM', 'MO', 'MRK', 'MS', 'MSFT', 'NEE'
-               , 'NFLX', 'NKE', 'NVDA', 'ORCL', 'PEP', 'PFE', 'PG', 'PM', 'PYPL', 'QCOM'
-               , 'RTX', 'SBUX', 'SCHW', 'SO', 'SPG', 'T', 'TGT', 'TMO', 'TMUS', 'TSLA'
-               , 'TXN', 'UNH', 'UNP', 'UPS', 'USB', 'V', 'VZ', 'WBA', 'WFC', 'WMT', 'XOM']
+user_email = 'gregsmith@kubrickgroup.com'
 
-def full_download(ticker_list:list[str], dest_folder:str, user_email:str, min_date = None, max_date = None, report = '10-K') -> None:
+def full_download(ticker_list:list[str], dest_folder:str, user_email = user_email, min_date = None, max_date = None, report = '10-K') -> None:
     
     '''
     takes a list of company tickers and writes all reports of a specific type, between specific dates, to a
@@ -24,13 +15,32 @@ def full_download(ticker_list:list[str], dest_folder:str, user_email:str, min_da
     max_date: str in 'YYYY-MM-DD' format  can specify the latest date records should be included
     report: str -> specifies the type of report to run
     '''
+   
+    if type(ticker_list) != list:
+        ticker_list = [ticker_list]
+        
+    missing_tickers = []
+    all_tickers = []
+
+    r = get_request('https://www.sec.gov/files/company_tickers.json', 'Company Tickers', user_email).json()
     
+
+    for key in r:
+        all_tickers.append(r[key]['ticker'].lower())
+
+    for ticker in ticker_list:
+        if ticker.lower() not in all_tickers:
+            missing_tickers.append(ticker.upper())
+
+    if len(missing_tickers) != 0:
+        raise Exception(f'The following tickers were not available from the SEC API: {", ".join(missing_tickers)}')
+
     for ticker in ticker_list:
         download_files_10k(ticker, dest_folder, user_email, min_date, max_date, report)
 
 
 
-def download_files_10k(ticker:str, dest_folder:str, user_email:str, min_date = None, max_date = None, report = '10-K') -> None:
+def download_files_10k(ticker:str, dest_folder:str, user_email = user_email, min_date = None, max_date = None, report = '10-K') -> None:
     
     '''
     takes a ticker and writes all files from that ticker to html files in the specified folder.
@@ -105,7 +115,6 @@ def get_request(url:str, section:str, user_email:str):
     url:string
     user_email:string
     section: string
-    headers: dictionary of the form {"User-Agent": "gregsmith@kubrickgroup.com"}
     '''
     headers = {'User-Agent': user_email}
     

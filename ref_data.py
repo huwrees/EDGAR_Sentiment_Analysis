@@ -38,7 +38,7 @@ def get_yahoo_data(start_date, end_date, tickers):
         ticker_data['5daily_return'] = ticker_data['close'].pct_change(periods=5).shift(-5)
         ticker_data['10daily_return'] = ticker_data['close'].pct_change(periods=10).shift(-10)
         ticker_data['Symbol'] = ticker
-        data = data.append(ticker_data, sort=False)
+        data = pd.concat([data, ticker_data], sort=False)
     data = data.reset_index()
     data = data[['formatted_date', 'high', 'low', 'close', 'volume', '1daily_return', '2daily_return', '3daily_return', '5daily_return', '10daily_return', 'Symbol']]
     data = data.rename(columns={'formatted_date': 'Date', 'high': 'High', 'low': 'Low', 'close': 'Close'})
