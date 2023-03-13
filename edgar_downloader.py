@@ -112,7 +112,6 @@ def get_request(url:str, section:str, user_email:str):
     url:string
     user_email:string
     section: string
-    headers: dictionary of the form {"User-Agent": "gregsmith@kubrickgroup.com"}
     '''
     headers = {'User-Agent': user_email}
     
