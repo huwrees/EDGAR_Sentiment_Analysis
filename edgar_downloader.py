@@ -16,6 +16,9 @@ def full_download(ticker_list:list[str], dest_folder:str, user_email = user_emai
     report: str -> specifies the type of report to run
     '''
    
+    if type(ticker_list) != list:
+        ticker_list = [ticker_list]
+        
     missing_tickers = []
     all_tickers = []
 
